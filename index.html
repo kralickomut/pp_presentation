@@ -1,0 +1,1201 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Co se děje pod kapotou moderních frameworků</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/black.css" id="theme">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/monokai.css">
+
+  <style>
+    :root{
+      --bg1:#06131c;
+      --bg2:#0b1824;
+      --bg3:#132233;
+      --card:rgba(255,255,255,.06);
+      --card-2:rgba(255,255,255,.04);
+      --border:rgba(255,255,255,.12);
+      --accent:#66d9ef;
+      --accent2:#a6e22e;
+      --danger:#ff7575;
+      --muted:#a5b0be;
+    }
+
+    html, body {
+      background:
+        radial-gradient(circle at top left, rgba(102,217,239,.15), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(166,226,46,.08), transparent 24%),
+        linear-gradient(135deg, var(--bg1), var(--bg2) 55%, var(--bg3));
+    }
+
+    .reveal {
+      font-size: 31px;
+    }
+
+    .reveal .slides section {
+      text-align: left;
+    }
+
+    .reveal h1, .reveal h2, .reveal h3 {
+      text-transform: none;
+      letter-spacing: -0.02em;
+    }
+
+    .reveal h1 { font-size: 2.15em; }
+    .reveal h2 { font-size: 1.48em; margin-bottom: .25em; }
+    .reveal h3 { font-size: .98em; color: var(--accent); margin: 0 0 12px; }
+
+    .reveal p, .reveal li {
+      line-height: 1.35;
+    }
+
+    .reveal ul {
+      display: block;
+      margin-left: .75em;
+    }
+
+    .eyebrow{
+      display:inline-block;
+      padding:7px 12px;
+      border-radius:999px;
+      border:1px solid rgba(102,217,239,.28);
+      background:rgba(102,217,239,.10);
+      color:var(--accent);
+      font-size:.52em;
+      text-transform:uppercase;
+      letter-spacing:.09em;
+      margin-bottom:14px;
+    }
+
+    .muted{ color:var(--muted); }
+    .accent{ color:var(--accent); }
+    .accent2{ color:var(--accent2); }
+    .danger{ color:var(--danger); }
+    .small{ font-size:.72em; }
+    .tiny{ font-size:.58em; }
+    .center{ text-align:center; }
+
+    .title-grid{
+      display:grid;
+      grid-template-columns: 1.25fr .95fr;
+      gap:28px;
+      align-items:center;
+      min-height:560px;
+    }
+
+    .card{
+      background: linear-gradient(180deg, var(--card), var(--card-2));
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:18px 22px;
+      box-sizing:border-box;
+      backdrop-filter: blur(6px);
+    }
+
+    .hero-side{
+      padding:24px;
+      border-radius:26px;
+      border:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(102,217,239,.10), rgba(255,255,255,.03));
+    }
+
+    .stack-box{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:16px;
+      text-align:center;
+      padding:14px 12px;
+      margin:10px 0;
+      font-weight:700;
+    }
+
+    .arrow{
+      text-align:center;
+      color:var(--accent);
+      font-size:.9em;
+      margin:2px 0;
+    }
+
+    .two-col{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:24px;
+      align-items:start;
+    }
+
+    .three-col{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:18px;
+      align-items:stretch;
+    }
+
+    .three-col .card{
+      height:100%;
+      box-sizing:border-box;
+    }
+
+    .pillars{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:18px;
+      margin-top:22px;
+    }
+
+    .pillar{
+      min-height:200px;
+    }
+
+    .num{
+      color:var(--accent);
+      font-size:.55em;
+      text-transform:uppercase;
+      letter-spacing:.09em;
+      font-weight:800;
+      margin-bottom:8px;
+    }
+
+    .flow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin:24px 0 18px;
+      flex-wrap:wrap;
+    }
+
+    .node{
+      flex:1 1 0;
+      min-width:160px;
+      text-align:center;
+      padding:16px 12px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.045);
+      font-weight:700;
+    }
+
+    .between{
+      color:var(--accent);
+      font-size:1.05em;
+      font-weight:800;
+      flex:0 0 auto;
+    }
+
+    .callout{
+      margin-top:16px;
+      border-left:4px solid var(--accent);
+      background:rgba(102,217,239,.09);
+      border-radius:8px 16px 16px 8px;
+      padding:14px 16px;
+      font-size:.82em;
+    }
+
+    .callout-danger{
+      border-left-color:var(--danger);
+      background:rgba(255,117,117,.10);
+    }
+
+    .quote{
+      margin-top:18px;
+      padding:22px 24px;
+      border-radius:18px;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--border);
+      font-size:1em;
+      line-height:1.32;
+    }
+
+    .compare{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:14px;
+      font-size:.74em;
+    }
+
+    .compare th,
+    .compare td{
+      border:1px solid var(--border);
+      padding:13px 14px;
+      vertical-align:top;
+    }
+
+    .compare th{
+      color:var(--accent);
+      background:rgba(255,255,255,.04);
+      text-align:left;
+    }
+
+    pre{
+      width:100%;
+      box-shadow:none !important;
+      margin:16px 0 !important;
+    }
+
+    pre code{
+      border-radius:18px;
+      padding:18px 20px !important;
+      max-height:none !important;
+      font-size:.78em !important;
+      line-height:1.38 !important;
+    }
+
+    .footer{
+      position:absolute;
+      bottom:10px;
+      right:24px;
+      color:rgba(255,255,255,.45);
+      font-size:.36em;
+    }
+
+    .mini{
+      font-size:.8em;
+    }
+
+
+    .framework-cloud{
+      position: relative;
+      min-height: 520px;
+      padding: 26px;
+      border-radius: 26px;
+      border: 1px solid var(--border);
+      background:
+              radial-gradient(circle at 20% 20%, rgba(102,217,239,.10), transparent 30%),
+              radial-gradient(circle at 80% 75%, rgba(166,226,46,.06), transparent 28%),
+              linear-gradient(180deg, rgba(102,217,239,.08), rgba(255,255,255,.03));
+      overflow: hidden;
+    }
+
+    .framework-cloud::before{
+      content:"";
+      position:absolute;
+      inset:18px;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.07);
+      pointer-events:none;
+    }
+
+    .logo-pill{
+      position:absolute;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-width:120px;
+      padding:16px 22px;
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      backdrop-filter: blur(6px);
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+      font-weight:800;
+      letter-spacing:-0.02em;
+    }
+
+    .logo-pill.small{
+      min-width:110px;
+      padding:14px 18px;
+      font-size:.84em;
+    }
+
+    .logo-pill.medium{
+      min-width:140px;
+      padding:16px 22px;
+      font-size:.92em;
+    }
+
+    .logo-pill.large{
+      min-width:170px;
+      padding:20px 28px;
+      font-size:1.05em;
+    }
+
+    .logo-react{
+      color:#7fe8ff;
+      border-color:rgba(127,232,255,.40);
+      background:linear-gradient(180deg, rgba(102,217,239,.20), rgba(255,255,255,.04));
+    }
+
+    .logo-dotnet{
+      color:#cdb7ff;
+      border-color:rgba(205,183,255,.35);
+      background:linear-gradient(180deg, rgba(126,87,194,.22), rgba(255,255,255,.04));
+    }
+
+    .logo-java{
+      color:#ffcf9a;
+      border-color:rgba(255,207,154,.35);
+      background:linear-gradient(180deg, rgba(255,159,67,.18), rgba(255,255,255,.04));
+    }
+
+    .logo-angular{
+      color:#ff9b9b;
+      border-color:rgba(255,120,120,.35);
+      background:linear-gradient(180deg, rgba(220,53,69,.22), rgba(255,255,255,.04));
+    }
+
+
+    /* GC SECTION */
+
+    .gc-section{
+      margin-top:28px;
+    }
+
+    .gc-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:26px;
+      width:100%;
+    }
+
+    /* všechny dlaždice */
+
+    .gc-tile{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:20px;
+      padding:22px 24px;
+      box-sizing:border-box;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+      min-height:200px;
+    }
+
+    /* horní textové karty */
+
+    .gc-tile h3{
+      margin-bottom:14px;
+      color:var(--accent);
+    }
+
+    .gc-tile ul{
+      margin:0 0 0 .8em;
+      line-height:1.35;
+    }
+
+    /* label nad kódem */
+
+    .gc-label{
+      font-size:.55em;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:10px;
+      font-weight:700;
+    }
+
+    /* code tile */
+
+    .gc-code{
+      overflow:hidden;
+    }
+
+    .gc-code pre{
+      width:100% !important;
+      max-width:100% !important;
+      margin:0 !important;
+      box-sizing:border-box;
+      box-shadow:none !important;
+      background:transparent !important;
+    }
+
+    .gc-code pre code{
+      display:block;
+      width:100%;
+      min-height:150px;
+      box-sizing:border-box;
+      border-radius:16px;
+      overflow:hidden;
+    }
+
+    /* malé zvýraznění good/bad */
+
+    .gc-bad{
+      border-left:4px solid #ff6b6b;
+    }
+
+    .gc-good{
+      border-left:4px solid #7cffb2;
+    }
+
+
+    .thread-diagram{
+      margin-top:34px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:16px;
+    }
+
+    .task-row,
+    .worker-row,
+    .thread-fanout{
+      display:grid;
+      gap:18px;
+    }
+
+    .task-row{
+      grid-template-columns:repeat(4, 1fr);
+      width:100%;
+    }
+
+    .worker-row{
+      grid-template-columns:repeat(3, 1fr);
+      width:70%;
+    }
+
+    .thread-fanout{
+      grid-template-columns:repeat(3, 1fr);
+      width:52%;
+      text-align:center;
+    }
+
+    .task-box,
+    .worker-box,
+    .pool-box{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;
+      padding:18px 20px;
+      box-sizing:border-box;
+      text-align:center;
+      font-weight:700;
+    }
+
+    .pool-box{
+      min-width:320px;
+      color:var(--accent);
+      font-size:1.02em;
+    }
+
+    .task-box,
+    .worker-box{
+      min-height:84px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .thread-arrow,
+    .fan-arrow{
+      color:var(--accent);
+      font-size:1.15em;
+      font-weight:800;
+    }
+
+    @media (max-width:1100px){
+      .task-row,
+      .worker-row,
+      .thread-fanout{
+        grid-template-columns:1fr;
+        width:100%;
+      }
+
+      .pool-box{
+        min-width:0;
+        width:100%;
+      }
+    }
+
+    /* responsive */
+
+    @media (max-width:1100px){
+      .gc-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+
+    @media (max-width: 1100px){
+      .title-grid, .two-col, .three-col, .pillars { grid-template-columns:1fr; }
+      .flow { flex-direction:column; align-items:stretch; }
+      .between { align-self:center; }
+    }
+  </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+  <section>
+    <div class="title-grid">
+      <div>
+        <div class="eyebrow">Pokročilé programování</div>
+        <h1>Co se děje pod kapotou <span class="accent">moderních frameworků</span></h1>
+        <p class="muted">Runtime, paměť, plánování práce a frontendové vykreslování.</p>
+      </div>
+
+      <div class="framework-cloud">
+        <div class="logo-pill logo-dotnet medium" style="top:60px; right:140px;">.NET</div>
+        <div class="logo-pill logo-java medium" style="top:178px; left:170px;">Java</div>
+        <div class="logo-pill logo-angular medium" style="top:280px; right:140px;">Angular</div>
+        <div class="logo-pill logo-react medium" style="bottom:90px; right:68px;">React</div>
+      </div>
+    </div>
+
+    <div class="footer">1</div>
+    <!--
+    Co říct:
+    Na první pohled vidíme názvy známých technologií.
+    Každá z nich ale stojí na mnohem hlubší vrstvě:
+    runtime, plánování práce, paměť, event loop nebo rendering.
+
+    Tento slide má ukázat, že framework není jen knihovna funkcí,
+    ale vstupní brána do celého běhového prostředí.
+    -->
+  </section>
+
+<section>
+  <div class="eyebrow">Backend runtime</div>
+  <h2>Co je runtime prostředí?</h2>
+  <div class="flow">
+    <div class="node">C# / Java kód</div>
+    <div class="between">→</div>
+    <div class="node">CLR / JVM</div>
+    <div class="between">→</div>
+    <div class="node">OS</div>
+    <div class="between">→</div>
+    <div class="node">CPU</div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <h3>Runtime zajišťuje</h3>
+      <ul class="small">
+        <li>kompilaci do nativního kódu</li>
+        <li>správu paměti</li>
+        <li>vlákna a plánování práce</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Proč je to důležité</h3>
+      <ul class="small">
+        <li>lepší představa o výkonu</li>
+        <li>lepší debugging a profiling</li>
+        <li>méně „framework magie“</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer">3</div>
+  <!--
+  Co říct:
+  Program v C# nebo Javě neběží přímo na CPU.
+  Běží uvnitř runtime prostředí, které za nás řeší velkou část infrastruktury.
+  To je důvod, proč můžeme psát produktivněji než v nativním C/C++.
+  -->
+</section>
+
+<section>
+  <div class="eyebrow">1 / 3</div>
+  <h2>JIT kompilace</h2>
+  <div class="flow">
+    <div class="node">Zdrojový kód</div>
+    <div class="between">→</div>
+    <div class="node">IL / bytecode</div>
+    <div class="between">→</div>
+    <div class="node">JIT compiler</div>
+    <div class="between">→</div>
+    <div class="node">Machine code</div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <h3>Co se děje</h3>
+      <ul class="small">
+        <li>C# → IL</li>
+        <li>Java → bytecode</li>
+        <li>runtime překládá kód až za běhu</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Proč je to výhodné</h3>
+      <ul class="small">
+        <li>přenositelnost mezi platformami</li>
+        <li>optimalizace pro konkrétní CPU</li>
+        <li>kompilují se části, které se používají </li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer">4</div>
+  <!--
+  Co říct:
+  To je dobrý advanced point:
+  program není jen „přeložený a hotovo“.
+  Překlad je rozdělen do dvou fází.
+  Díky tomu máme rozumný kompromis mezi přenositelností a výkonem.
+  -->
+</section>
+
+  <section>
+    <div class="eyebrow">2 / 3</div>
+    <h2>Garbage Collector</h2>
+
+    <div class="flow" style="margin-top:40px">
+      <div class="node">objekt vznikne</div>
+      <div class="between">→</div>
+      <div class="node">existuje na heapu</div>
+      <div class="between">→</div>
+      <div class="node">ztratí reference</div>
+      <div class="between">→</div>
+      <div class="node">GC ho odstraní</div>
+    </div>
+
+    <div class="callout" style="margin-top:40px">
+      Většina objektů v běžných aplikacích je krátkodobá,
+      proto moderní GC používají generační model
+      optimalizovaný právě na krátce žijící objekty.
+    </div>
+
+    <div class="footer">5</div>
+
+    <!--
+    Co říct:
+
+    GC funguje na principu dosažitelnosti objektů.
+
+    Objekt vznikne na heapu a existuje tak dlouho,
+    dokud na něj vede nějaká reference.
+
+    Jakmile žádná reference neexistuje,
+    runtime ho považuje za garbage.
+
+    Garbage collector pak v určitém momentu projde heap
+    a tyto objekty odstraní.
+
+    Důležitá praktická pointa:
+    paměť sice neuvolňujeme ručně,
+    ale stále musíme přemýšlet o alokacích.
+
+    Většina objektů v běžných aplikacích je krátkodobá,
+    proto moderní GC používají generační model
+    optimalizovaný právě na krátce žijící objekty.
+    -->
+  </section>
+
+
+  <section>
+    <div class="eyebrow">2 / 3</div>
+    <h2>GC v praxi</h2>
+
+    <div class="gc-section">
+      <div class="gc-grid">
+
+        <div class="gc-tile">
+          <h3>Proč GC nevolat ručně?</h3>
+          <ul class="small">
+            <li>runtime ví lépe, kdy kolekci spustit</li>
+            <li>ruční volání může zastavit aplikaci</li>
+          </ul>
+        </div>
+
+        <div class="gc-tile">
+          <h3>Co vytváří tlak na GC?</h3>
+          <ul class="small">
+            <li>mnoho krátkodobých objektů</li>
+            <li>alokace v cyklech</li>
+            <li>výjimky v běžném toku programu</li>
+          </ul>
+        </div>
+
+        <div class="gc-tile gc-code gc-bad">
+          <div class="gc-label">HORŠÍ PŘÍSTUP</div>
+          <pre><code class="language-csharp">try
+{
+    value = int.Parse(input);
+}
+catch
+{
+    value = 0;
+}
+          </code></pre>
+        </div>
+
+        <div class="gc-tile gc-code gc-good">
+          <div class="gc-label">LEPŠÍ PŘÍSTUP</div>
+          <pre><code class="language-csharp">if (!int.TryParse(input, out value))
+{
+    value = 0;
+}</code></pre>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="footer">6</div>
+
+    <!--
+    Co říct:
+
+    GC většinou nechceme řídit ručně.
+    Runtime má lepší přehled o paměti a ví, kdy kolekci spustit.
+
+    Ruční volání GC může aplikaci zbytečně zastavit.
+
+    Tlak na GC vzniká hlavně při častých alokacích
+    krátkodobých objektů.
+
+    Typickým příkladem jsou výjimky používané jako běžný
+    tok programu.
+
+    Proto je lepší používat TryParse místo exception flow.
+    -->
+  </section>
+
+
+<section>
+  <div class="eyebrow">3 / 3</div>
+  <h2>Vlákna, Thread Pool a scheduler</h2>
+  <div class="flow">
+    <div class="node">Task</div>
+    <div class="between">→</div>
+    <div class="node">Thread Pool</div>
+    <div class="between">→</div>
+    <div class="node">Worker</div>
+    <div class="between">→</div>
+    <div class="node">CPU</div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <h3>Základní myšlenka</h3>
+      <ul class="small">
+        <li>nové OS vlákno je relativně drahé</li>
+        <li>runtime proto vlákna znovu používá</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Java Virtual Threads</h3>
+      <ul class="small">
+        <li>lehčí než klasická platform threads</li>
+        <li>výborné hlavně pro I/O bound scénáře</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout">Runtime neřeší jen spuštění programu, ale i orchestrace práce.</div>
+  <div class="footer">7</div>
+  <!--
+  Co říct:
+  Tady můžeš říct, že thread pool je hlavně optimalizace režie.
+  A jako zajímavost zakončit backend část Java Virtual Threads.
+  Nemusíš zacházet do detailů, stačí pointa: levnější vlákna, lepší škálování pro hodně I/O.
+  -->
+</section>
+
+  <section>
+    <div class="eyebrow">3 / 3</div>
+    <h2>Vlákna, Thread Pool a scheduler</h2>
+
+    <div class="thread-diagram">
+      <div class="task-row">
+        <div class="task-box">Task 1</div>
+        <div class="task-box">Task 2</div>
+        <div class="task-box">Task 3</div>
+        <div class="task-box">Task 4</div>
+      </div>
+
+      <div class="thread-arrow">↓</div>
+
+      <div class="pool-box">Thread Pool</div>
+
+      <div class="thread-fanout">
+        <div class="fan-arrow">↙</div>
+        <div class="fan-arrow">↓</div>
+        <div class="fan-arrow">↘</div>
+      </div>
+
+      <div class="worker-row">
+        <div class="worker-box">Worker 1</div>
+        <div class="worker-box">Worker 2</div>
+        <div class="worker-box">Worker 3</div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:28px;">
+      Thread Pool znovu používá existující vlákna, takže runtime nemusí pro každý úkol vytvářet nové OS vlákno.
+    </div>
+
+    <div class="footer">7</div>
+
+    <!--
+    Co říct:
+
+    Task není totéž co OS vlákno.
+
+    Task představuje jednotku práce.
+    Runtime ji zařadí do thread poolu
+    a scheduler ji přidělí některému volnému worker vláknu.
+
+    Důvod je jednoduchý:
+    nové OS vlákno je relativně drahé.
+
+    Proto je efektivnější mít pool již existujících vláken
+    a práci do nich jen plánovat.
+
+    U .NET i Javy je to běžný základ škálování.
+
+    Zajímavost:
+    Java Virtual Threads tenhle model ještě posouvají dál,
+    protože umožňují mít obrovské množství lehkých vláken
+    mapovaných na menší počet skutečných OS vláken.
+    -->
+  </section>
+
+<section>
+  <div class="eyebrow">Přechod</div>
+  <h2>Stejné otázky existují i na frontendu</h2>
+  <pre><code class="language-javascript">fetch('/api/users')
+  .then(r => r.json())
+  .then(data => setUsers(data));</code></pre>
+  <div class="two-col">
+    <div class="card">
+      <h3>Backend</h3>
+      <ul class="small">
+        <li>JIT</li>
+        <li>GC</li>
+        <li>Thread Pool</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Frontend</h3>
+      <ul class="small">
+        <li>JS runtime</li>
+        <li>heap + GC</li>
+        <li>event loop + rendering</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer">8</div>
+  <!--
+  Co říct:
+  Tohle je most ke kolegovi.
+  Jediný kousek kódu hezky ukazuje celý stack:
+  browser API → event loop → síť → backend → odpověď → update UI.
+  -->
+</section>
+
+<section>
+  <div class="eyebrow">Frontend runtime</div>
+  <h2>JavaScript runtime v browseru</h2>
+  <div class="flow">
+    <div class="node">JavaScript</div>
+    <div class="between">→</div>
+    <div class="node">JS engine</div>
+    <div class="between">+</div>
+    <div class="node">Browser APIs</div>
+    <div class="between">→</div>
+    <div class="node">DOM / síť / UI</div>
+  </div>
+  <div class="three-col">
+    <div class="card">
+      <h3>Engine</h3>
+      <ul class="small">
+        <li>parse + execute</li>
+        <li>call stack</li>
+        <li>heap + GC</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Host APIs</h3>
+      <ul class="small">
+        <li>DOM</li>
+        <li>fetch</li>
+        <li>timery</li>
+        <li>events</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Rozdíl proti backendu</h3>
+      <ul class="small">
+        <li>hlavní JS běží typicky na jednom vlákně</li>
+        <li>asynchronita se řeší přes event loop</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer">9</div>
+  <!--
+  Co říct:
+  Tady je dobré zdůraznit, že browser runtime není jen "JavaScript".
+  Je to kombinace engine + host prostředí.
+  To je důvod, proč JavaScript sám o sobě neumí DOM, fetch nebo timer bez hosta.
+  -->
+</section>
+
+<section>
+  <div class="eyebrow">Event loop</div>
+  <h2>Jak funguje asynchronita v browseru</h2>
+  <div class="two-col" style="align-items:center;">
+    <div style="display:flex; flex-direction:column; align-items:center; gap:10px; padding:12px 0;">
+      <div class="node" style="width:100%; text-align:center;">Call Stack</div>
+      <div class="between">↓</div>
+      <div class="node" style="width:100%; text-align:center;">Event Queue</div>
+      <div class="between">↓</div>
+      <div class="node" style="width:100%; text-align:center;">Event Loop</div>
+    </div>
+    <div>
+      <pre><code class="language-javascript">console.log('A');
+
+setTimeout(() => console.log('timeout'), 0);
+
+Promise.resolve().then(() => console.log('promise'));
+
+console.log('B');
+// A, B, promise, timeout</code></pre>
+    </div>
+  </div>
+  <div class="footer">10</div>
+  <!--
+  Co říct:
+  To je klíčový slide frontendové části.
+  Příklad A/B/promise/timeout je krátký a přitom působí pokročile.
+  Hlavní message: JS typicky neběží na mnoha worker vláknech jako backend,
+  ale používá event loop model.
+  -->
+</section>
+
+<section>
+  <div class="eyebrow">Event loop — detail</div>
+  <h2>Microtasky vs. Macrotasky</h2>
+  <div style="display:grid; grid-template-columns:1.1fr 1fr; gap:22px; margin-bottom:16px;">
+    <div style="border:2px solid var(--accent); border-radius:18px; padding:18px; position:relative;">
+      <div style="position:absolute; top:-13px; left:20px; background:#0b1824; padding:0 10px; color:var(--accent); font-size:.55em; font-weight:800; letter-spacing:.09em; text-transform:uppercase;">Cyklus</div>
+      <div class="node" style="margin-bottom:10px; background:rgba(102,217,239,.12); border-color:var(--accent);">1. Call Stack vykonává kód</div>
+      <div class="arrow">↓ stack je prázdný</div>
+      <div class="node" style="margin:10px 0; background:rgba(166,226,46,.08); border-color:var(--accent2);">2. Zpracuj VŠECHNY microtasky</div>
+      <div class="arrow">↓</div>
+      <div class="node" style="margin:10px 0;">3. Vezmi JEDNU macrotask</div>
+      <div class="arrow">↓</div>
+      <div class="node" style="background:rgba(102,217,239,.05); border-color:rgba(102,217,239,.2);">4. → zpět na 1.</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <div class="card" style="border-color:var(--accent2);">
+        <div class="num" style="color:var(--accent2);">Microtask Queue</div>
+        <ul class="small">
+          <li>Promise.then / .catch</li>
+          <li>queueMicrotask()</li>
+          <li>MutationObserver</li>
+        </ul>
+        <div class="tiny muted" style="margin-top:6px;">všechny proběhnou před dalším rendrem</div>
+      </div>
+      <div class="card">
+        <div class="num">Macrotask Queue</div>
+        <ul class="small">
+          <li>setTimeout / setInterval</li>
+          <li>fetch callbacky</li>
+          <li>DOM events (click, input...)</li>
+        </ul>
+        <div class="tiny muted" style="margin-top:6px;">vždy jen 1 task na jeden cyklus</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">11</div>
+  <!--
+  Co říct:
+  Klíčové: microtasky mají absolutní přednost.
+  Všechny Promise callbacky proběhnou dřív, než se dostane na setTimeout.
+  Proto byl výstup v předchozím příkladu: A, B, promise, timeout.
+  Web APIs jsou součástí browseru, ne JS enginu — JS je předá a pokračuje dál bez blokování.
+  -->
+</section>
+
+<section>
+  <div class="eyebrow">React lifecycle</div>
+  <h2>Co React dělá za nás — životní cyklus komponenty</h2>
+
+  <!--
+    Grid: 4 col × 5 row
+    col 1 = sidebar labels
+    col 2 = Mounting, col 3 = Updating, col 4 = Unmounting
+    row 1 = column headers
+    row 2 = triggers (constructor / new-props+setState / empty)
+    row 3 = render (col 2+3 span) + unmounting dash
+    row 4 = React updates DOM (col 2+3 span) + empty
+    row 5 = lifecycle methods (one per col)
+    Render phase sidebar spans rows 2–3
+    Commit phase sidebar spans rows 4–5
+  -->
+  <div style="
+    display: grid;
+    grid-template-columns: 148px 1fr 1fr 1fr;
+    grid-template-rows: auto auto auto auto auto;
+    column-gap: 10px;
+    row-gap: 7px;
+    margin: 16px 0 12px;
+    align-items: stretch;
+  ">
+
+    <!-- ── ROW 1: column headers ── -->
+    <div></div>
+    <div style="text-align:center; font-size:.57em; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:.08em; padding-bottom:7px; border-bottom:1px solid rgba(255,255,255,.18);">Mounting</div>
+    <div style="text-align:center; font-size:.57em; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:.08em; padding-bottom:7px; border-bottom:1px solid rgba(255,255,255,.18);">Updating</div>
+    <div style="text-align:center; font-size:.57em; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:.08em; padding-bottom:7px; border-bottom:1px solid rgba(255,255,255,.18);">Unmounting</div>
+
+    <!-- ── RENDER PHASE SIDEBAR: spans rows 2–3 ── -->
+    <div style="grid-column:1; grid-row:2/4; border-right:1px dashed rgba(255,255,255,.22); padding-right:14px; display:flex; flex-direction:column; justify-content:center; gap:6px;">
+      <div style="font-size:.51em; color:var(--accent); font-weight:800; text-transform:uppercase; letter-spacing:.07em;">"Render phase"</div>
+      <div style="font-size:.43em; color:var(--muted); line-height:1.38;">Pure, bez side effects. Může být pozastavena nebo restartována.</div>
+    </div>
+
+    <!-- ── ROW 2: triggers ── -->
+    <div style="grid-column:2; grid-row:2; text-align:center; font-size:.62em; color:var(--muted); padding:9px 12px; border:1px dashed rgba(102,217,239,.45); border-radius:11px; display:flex; align-items:center; justify-content:center;">constructor()</div>
+    <div style="grid-column:3; grid-row:2; text-align:center; font-size:.52em; color:var(--muted); padding:7px 6px; border:1px dashed rgba(255,255,255,.22); border-radius:11px; display:flex; align-items:center; justify-content:center; gap:10px;"><em>New props</em><span>setState()</span><span>forceUpdate()</span></div>
+    <div style="grid-column:4; grid-row:2; border-left:1px dashed rgba(255,255,255,.18);"></div>
+
+    <!-- ── ROW 3: render block spans cols 2+3 ── -->
+    <div style="grid-column:2/4; grid-row:3; text-align:center; font-size:.84em; font-weight:800; padding:11px 8px; background:rgba(102,217,239,.14); border:2px solid var(--accent); border-radius:12px; display:flex; align-items:center; justify-content:center;">render</div>
+    <div style="grid-column:4; grid-row:3; border-left:1px dashed rgba(255,255,255,.18);"></div>
+
+    <!-- ── COMMIT PHASE SIDEBAR: spans rows 4–5 ── -->
+    <div style="grid-column:1; grid-row:4/6; border-right:1px dashed rgba(255,255,255,.22); border-top:1px dashed rgba(255,255,255,.22); padding-right:14px; padding-top:10px; display:flex; flex-direction:column; justify-content:center; gap:6px;">
+      <div style="font-size:.51em; color:var(--accent2); font-weight:800; text-transform:uppercase; letter-spacing:.07em;">"Commit phase"</div>
+      <div style="font-size:.43em; color:var(--muted); line-height:1.38;">Smí pracovat s DOM, spouštět side effects, plánovat aktualizace.</div>
+    </div>
+
+    <!-- ── ROW 4: React updates DOM spans cols 2+3 ── -->
+    <div style="grid-column:2/4; grid-row:4; text-align:center; font-size:.72em; padding:10px 8px; background:rgba(200,160,40,.12); border:1px solid rgba(200,160,40,.55); border-radius:12px; font-style:italic; color:#d4c070; display:flex; align-items:center; justify-content:center; border-top:1px dashed rgba(255,255,255,.22); margin-top:4px;">React updates DOM and refs</div>
+    <div style="grid-column:4; grid-row:4;"></div>
+
+    <!-- ── ROW 5: lifecycle methods ── -->
+    <div style="grid-column:2; grid-row:5; text-align:center; font-size:.65em; font-weight:700; padding:10px 8px; background:rgba(166,226,46,.11); border:1px solid var(--accent2); border-radius:12px; display:flex; align-items:center; justify-content:center;">componentDidMount</div>
+    <div style="grid-column:3; grid-row:5; text-align:center; font-size:.65em; font-weight:700; padding:10px 8px; background:rgba(166,226,46,.11); border:1px solid var(--accent2); border-radius:12px; display:flex; align-items:center; justify-content:center;">componentDidUpdate</div>
+    <div style="grid-column:4; grid-row:5; text-align:center; font-size:.65em; font-weight:700; padding:10px 8px; background:rgba(166,226,46,.11); border:1px solid var(--accent2); border-radius:12px; display:flex; align-items:center; justify-content:center;">componentWillUnmount</div>
+
+  </div>
+
+  <div class="callout"><strong>Render phase</strong> popisuje jak má UI vypadat — výsledkem jsou VDOM objekty. <strong>Commit phase</strong> zapíše do reálného DOM jen to, co se změnilo.</div>
+  <div class="footer">12</div>
+  <!--
+  Co říct:
+  React rozděluje práci na dvě fáze.
+  Render phase je čistá — může být přerušena a zopakována (to je základ React Fiber).
+  Commit phase smí sahat na DOM — a to jen s minimálním počtem změn.
+  constructor() vytvoří komponentu, render() popíše strukturu — ale do DOM nesahá.
+  Tím React odděluje "co chceme" od "jak to provést".
+  -->
+</section>
+
+<section>
+  <div class="eyebrow">Reconciliation</div>
+  <h2>Jak React hledá minimální změnu v DOM</h2>
+  <div class="two-col" style="align-items:start;">
+    <div>
+      <h3>Bez frameworku — ruční přístup</h3>
+      <pre><code class="language-javascript">// Po každé změně musíme sami vědět,
+// co přesně aktualizovat
+document.getElementById('count')
+  .textContent = newCount;
+
+document.getElementById('btn')
+  .disabled = newCount >= 10;
+
+document.getElementById('status')
+  .className = newCount > 5
+    ? 'warn' : 'ok';</code></pre>
+      <div class="callout callout-danger tiny" style="margin-top:8px;">Každá změna stavu = ruční hledání správného uzlu. Chyba = špatný DOM.</div>
+    </div>
+    <div>
+      <h3>React — reconciliation</h3>
+      <pre><code class="language-jsx">function Counter() {
+  const [count, setCount] = useState(0);
+  return (
+    &lt;div&gt;
+      &lt;span id="count"&gt;{count}&lt;/span&gt;
+      &lt;button disabled={count >= 10}
+        onClick={() => setCount(c => c+1)}&gt;
+        +
+      &lt;/button&gt;
+      &lt;span className={count > 5
+        ? 'warn' : 'ok'} /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+      <div class="callout tiny" style="margin-top:8px;">setState() → nový VDOM strom → diff se starým → <strong>React aktualizuje jen uzly, které se lišily</strong>.</div>
+    </div>
+  </div>
+  <div class="footer">13</div>
+  <!--
+  Co říct:
+  Bez Reactu si musíme pamatovat co jsme změnili a ručně najít správný DOM uzel.
+  React obrátí tento přístup: popíšeme celý výstup deklarativně a framework sám
+  porovná nový VDOM strom se starým a zapíše jen rozdíly.
+  To je reconciliation — srdce Reactu a důvod, proč je práce s UI předvídatelná.
+  -->
+</section>
+
+<section>
+  <div class="eyebrow">Shrnutí</div>
+  <h2>Backend a frontend jsou dva různé runtime modely</h2>
+  <table class="compare">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Backend</th>
+        <th>Frontend</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Kód běží v</strong></td>
+        <td>CLR / JVM</td>
+        <td>JS engine + browser host</td>
+      </tr>
+      <tr>
+        <td><strong>Paměť</strong></td>
+        <td>heap + GC</td>
+        <td>heap + GC</td>
+      </tr>
+      <tr>
+        <td><strong>Plánování práce</strong></td>
+        <td>Thread Pool / scheduler</td>
+        <td>event loop / queue</td>
+      </tr>
+      <tr>
+        <td><strong>Abstrakce navíc</strong></td>
+        <td>backend framework</td>
+        <td>React / Vue / Angular</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="quote">
+    Lepší vývojář nepoužívá framework jen „zvenku“, ale rozumí i tomu, <span class="accent">co za něj dělá runtime a co stojí výkon</span>.
+  </div>
+  <div class="footer">14</div>
+  <!--
+  Co říct:
+  Pointa celé prezentace:
+  frameworky a runtime skrývají složitost, ale ta složitost nezmizela.
+  Když jí rozumíme, lépe chápeme výkon, chyby i architekturu aplikace.
+  -->
+</section>
+
+<section>
+  <div class="center" style="margin-top:120px">
+    <h1>Děkujeme za pozornost</h1>
+    <p class="muted">Dotazy?</p>
+  </div>
+  <div class="footer">15</div>
+  <!--
+  Co říct:
+  Pokud bude čas navíc, dobrá doplňující otázka do diskuze:
+  "Kdy už má smysl řešit GC / allocations / event loop a kdy je to naopak předčasná optimalizace?"
+  -->
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/highlight.js"></script>
+<script>
+Reveal.initialize({
+  hash: true,
+  controls: true,
+  progress: true,
+  center: true,
+  slideNumber: false,
+  transition: 'slide',
+  backgroundTransition: 'fade',
+  plugins: [ RevealHighlight ]
+});
+</script>
+</body>
+</html>
